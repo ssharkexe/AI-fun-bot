@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  bot:
+    build: ./bot
+    restart: always
+    environment:
+      - IS_WEBHOOK
+      - TELEGRAM_TOKEN
+      - ADMIN_TELEGRAM_ID
+      - OPENAI_API_KEY
+      - PEXELS_API_KEY
+      - NGINX_HOST
+      - PAYMENTS_TOKEN
+      - PROXY_HOST
+      - PROXY_PORT
+      - PROXY_USER
+      - PROXY_PASS
+    ports:
+      - 3001:3001
+    volumes:
+      - ./bot/db/:/bot/db/:rw
+      - ./bot/log/:/bot/log/:rw
+      - ./bot/img/:/bot/img/:rw
+    command: sh -c "python -u main.py"
+  nginx:
+    image: nginx:1.23-alpine
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    environment:
+      # - NGINX_ENVSUBST_TEMPLATE_DIR=/etc/nginx/first_start
+      - NGINX_HOST
+    volumes:
+      # - ./nginx/first_start/:/etc/nginx/first_start/:ro
+      - ./nginx/templates/:/etc/nginx/templates/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
+  certbot:
+    image: certbot/certbot:v2.5.0
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
