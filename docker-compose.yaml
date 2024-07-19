@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   bot:
     build: ./bot
@@ -33,7 +31,7 @@ services:
       # - NGINX_ENVSUBST_TEMPLATE_DIR=/etc/nginx/first_start
       - NGINX_HOST
     volumes:
-      # - ./nginx/first_start/:/etc/nginx/first_start/:ro
+      # - ./nginx/first_start/:/etc/nginx/templates/:ro
       - ./nginx/templates/:/etc/nginx/templates/:ro
       - ./certbot/www:/var/www/certbot/:ro
       - ./certbot/conf/:/etc/nginx/ssl/:ro
