@@ -1,7 +1,7 @@
 from modules import dbdata as db
 import os
 import openai, httpx
-from openai import OpenAI, OpenAIError, APIConnectionError, BadRequestError, RateLimitError, PermissionDeniedError
+from openai import OpenAI, OpenAIError, APIConnectionError, BadRequestError, RateLimitError, PermissionDeniedError, AuthenticationError
 
 proxy_host = os.environ.get("PROXY_HOST")
 proxy_port = os.environ.get("PROXY_PORT")
@@ -29,8 +29,8 @@ roles = {
 }
 
 gpt_models = {
-    3:'gpt-3.5-turbo',
-    4:'gpt-4-1106-preview'
+    3:'gpt-4o-mini',
+    4:'gpt-4-turbo'
 }
 
 # Обработка входящих сообщений от пользователей    
@@ -72,6 +72,9 @@ async def handle_message(telegram_id: int, text: str, contexts: dict, model: int
     except BadRequestError:
         contexts[telegram_id] = []
         return contexts, 'Контекст превышает 4000 токенов! Кэш контекста сброшен'
+    except AuthenticationError:
+        contexts[telegram_id] = []
+        return contexts, 'Обновите токен OpenAI'
     
     
 # Настройка стиля собеседника   
